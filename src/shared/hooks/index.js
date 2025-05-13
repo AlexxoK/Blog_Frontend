@@ -1,0 +1,1 @@
+export { handlePostComment } from './useComment'
