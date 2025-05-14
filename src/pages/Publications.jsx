@@ -5,16 +5,14 @@ const Publications = () => {
   const [publications, setPublications] = useState([]);
   const [selectedPublication, setSelectedPublication] = useState(null);
   const [comment, setComment] = useState("");
-  const [feedback, setFeedback] = useState("");
   const [author, setAuthor] = useState("");
+  const [isCommentSubmitted, setIsCommentSubmitted] = useState(false);
 
   useEffect(() => {
     const fetchPublications = async () => {
       const res = await getPublications();
       if (!res.error) {
         setPublications(res.data.publications);
-      } else {
-        console.error("Error getting publications!", res.e);
       }
     };
 
@@ -23,26 +21,24 @@ const Publications = () => {
 
   const handleSelect = (pub) => {
     setSelectedPublication(pub);
-    setFeedback("");
+    setIsCommentSubmitted(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!comment.trim() || !author.trim()) return;
 
-    const data = {
-      author,
-      comment,
-      publication: selectedPublication._id,
-    };
+    if (!comment.trim() || !author.trim() || !selectedPublication?.title) return;
+
+    const data = { author, comment, publication: selectedPublication.title };
 
     const res = await postComment(data);
     if (!res.error) {
-      setFeedback("Comment sumbit succesfully!");
       setComment("");
-    } else {
-      setFeedback("Error sumbit comment!");
-      console.error(res.e);
+      setIsCommentSubmitted(true);
+      const refreshRes = await getPublications();
+      if (!refreshRes.error) {
+        setPublications(refreshRes.data.publications);
+      }
     }
   };
 
@@ -67,7 +63,7 @@ const Publications = () => {
         ))}
       </ul>
 
-      {selectedPublication && (
+      {selectedPublication && !isCommentSubmitted && (
         <div className="mt-4">
           <h5>Add comment to: <strong>{selectedPublication.title}</strong></h5>
 
@@ -91,11 +87,13 @@ const Publications = () => {
                 onChange={(e) => setComment(e.target.value)}
               />
             </div>
-            <button type="submit" className="btn btn-primary">Sumbit Comment</button>
+            <button type="submit" className="btn btn-primary">Submit Comment</button>
           </form>
-
-          {feedback && <div className="alert alert-info mt-3">{feedback}</div>}
         </div>
+      )}
+
+      {isCommentSubmitted && (
+        <div className="alert alert-success mt-3">Comment submitted successfully!</div>
       )}
     </div>
   );
