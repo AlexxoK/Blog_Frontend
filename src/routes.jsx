@@ -1,7 +1,6 @@
 import Layout from "./components/layout/Layout";
 import Publications from "./pages/Publications";
 import Comments from "./pages/Comments";
-import Courses from "./pages/Courses";
 
 const routes = [
     {
@@ -10,7 +9,6 @@ const routes = [
         children: [
             { path: "publications", element: <Publications /> },
             { path: "comments", element: <Comments /> },
-            { path: "courses", element: <Courses /> },
             { index: true, element: <Publications /> }, // por defecto va a publications
         ],
     },

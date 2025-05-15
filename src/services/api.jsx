@@ -16,6 +16,17 @@ export const postComment = async (data) => {
     }
 }
 
+export const getcomments = async () => {
+    try {
+        return await apiClient.get('/comments/getComments')
+    } catch (e) {
+        return {
+            error: true,
+            e
+        }
+    }
+}
+
 export const getCommentByPublication = async (title) => {
     try {
         return await apiClient.get(`/comments/getCommentByPublication/${title}`)
