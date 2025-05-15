@@ -1,1 +1,2 @@
-export { handlePostComment } from './useComment'
+export { usePublications } from './usePublications';
+export { useComments } from './useComments';
