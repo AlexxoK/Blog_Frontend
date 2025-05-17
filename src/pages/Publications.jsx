@@ -1,82 +1,74 @@
 import { usePublications } from "../shared/hooks/usePublications";
 
 const Publications = () => {
-  const { publications, selectedPublication, setSelectedPublication, comment, setComment, author, setAuthor, handleCommentSubmit, searchCourse,
-    setSearchCourse, fetchPublications, error, loading, commentSuccess, filter, setFilter } = usePublications();
+  const {
+    publications, selectedPublication, setSelectedPublication, comment, setComment, author, setAuthor,
+    handleCommentSubmit, searchCourse, setSearchCourse, fetchPublications, error, loading,
+    commentSuccess, filter, setFilter
+  } = usePublications();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     handleCommentSubmit();
-  }
+  };
 
   return (
-    <div className="container mt-4">
-      <h2 className="display-6 fw-bold">Publications</h2>
+    <div className="container py-5">
+      <h2 className="fw-bold mb-5 text-center display-5">📚 Explore Publications</h2>
 
-      <div className="mb-3 d-flex gap-2">
+      <div className="d-flex flex-wrap gap-3 align-items-center mb-4 p-4 rounded-4 shadow bg-white border">
         <input
           type="text"
-          placeholder="Search publications by course name"
-          className="form-control"
+          className="form-control flex-grow-1 rounded-3"
+          placeholder="🔍 Search by course name..."
           value={searchCourse}
           onChange={(e) => setSearchCourse(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && fetchPublications(searchCourse.trim())}
         />
         <button
-          className="btn btn-secondary"
+          className="btn btn-outline-dark rounded-3"
           onClick={() => {
             setSearchCourse("");
             fetchPublications();
           }}
         >
-          All
+          Show All
         </button>
         <select
-          className="form-select"
-          style={{ maxWidth: 200 }}
+          className="form-select rounded-3"
+          style={{ maxWidth: 220 }}
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         >
           <option value="">Filter (none)</option>
-          <option value="course">Course</option>
-          <option value="publicated">Publicated</option>
+          <option value="course">By Course</option>
+          <option value="publicated">By Date</option>
         </select>
       </div>
 
-      {error && <p className="text-danger">{error}</p>}
-      {loading && !error && <p>Loading publications...</p>}
+      {error && <div className="alert alert-danger rounded-3">{error}</div>}
+      {loading && !error && <p className="text-muted">Loading publications...</p>}
 
       {!loading && publications.length > 0 && (
-        <div className="row mt-3">
+        <div className="row row-cols-1 row-cols-md-2 g-4">
           {publications.map((pub) => (
-            <div
-              key={pub._id}
-              className="col-12 mb-4"
-              onClick={() => setSelectedPublication(pub)}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="card shadow-sm">
-                <div className="card-body">
+            <div key={pub._id} className="col" onClick={() => setSelectedPublication(pub)} style={{ cursor: "pointer" }}>
+              <div className="card border-0 h-100 shadow-sm rounded-4">
+                <div className="card-body p-4">
+                  <h5 className="fw-semibold mb-1">{pub.title}</h5>
+                  <p className="text-muted small mb-3">{pub.description}</p>
                   <p className="mb-1">
                     <strong>Course:</strong>{" "}
-                    {pub.course?.length
-                      ? pub.course.map((c) => c.name).join(", ")
-                      : "Sin curso asignado!"}
+                    {pub.course?.length ? pub.course.map((c) => c.name).join(", ") : "No course assigned"}
                   </p>
-                  <div style={{ borderTop: "1px solid #eee", marginTop: 12, paddingTop: 12 }}>
-                    <p className="mb-1"><strong>{pub.title}</strong></p>
-                    <p className="mb-1">{pub.description}</p>
-                  </div>
-                  <div style={{ borderTop: "1px solid #eee", marginTop: 12, paddingTop: 12 }}>
-                    <p className="mb-0">
-                      <strong>Created:</strong>{" "}
-                      {new Date(pub.createdAt).toLocaleDateString("es-CL", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
+                  <p className="text-secondary small mb-0">
+                    <strong>Created:</strong>{" "}
+                    {new Date(pub.createdAt).toLocaleDateString("es-CL", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
                 </div>
               </div>
             </div>
@@ -85,26 +77,26 @@ const Publications = () => {
       )}
 
       {selectedPublication && !commentSuccess && (
-        <div className="mt-4">
-          <h5>
-            Add comment to: <strong>{selectedPublication.title}</strong>
-          </h5>
+        <div className="mt-5 p-4 bg-white rounded-4 shadow-sm border">
+          <h4 className="fw-semibold mb-4">
+            💬 Add Comment to: <strong>{selectedPublication.title}</strong>
+          </h4>
           <input
             type="text"
-            className="form-control mb-3"
+            className="form-control mb-3 rounded-3"
             placeholder="Author"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
           />
           <form onSubmit={handleSubmit}>
             <textarea
-              className="form-control mb-3"
+              className="form-control mb-3 rounded-3"
               placeholder="Write your comment..."
-              rows={3}
+              rows={4}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
             />
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary rounded-3">
               Submit Comment
             </button>
           </form>
@@ -112,10 +104,12 @@ const Publications = () => {
       )}
 
       {commentSuccess && (
-        <div className="alert alert-success mt-3">Comment submitted successfully!</div>
+        <div className="alert alert-success mt-4 rounded-3 shadow-sm">
+          ✅ Comment submitted successfully!
+        </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 export default Publications;

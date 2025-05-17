@@ -1,28 +1,45 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const Navbar = () => {
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-4">
-            <div className="container-fluid">
-                <Link className="navbar-brand fw-bold" to="/">Blog</Link>
+        <nav className="navbar navbar-expand-lg" style={{ backgroundColor: "#1f1f1f" }}>
+            <div className="container">
+                <Link className="navbar-brand fw-bold fs-4 text-light" to="/">
+                    📝 Blog
+                </Link>
                 <button
-                    className="navbar-toggler"
+                    className="navbar-toggler border-0"
                     type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
+                    data-bs-target="#navbarNavAlt"
+                    aria-controls="navbarNavAlt"
                     aria-expanded="false"
                     aria-label="Toggle navigation"
                 >
-                    <span className="navbar-toggler-icon"></span>
+                    <span className="navbar-toggler-icon" />
                 </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav ms-auto">
+
+                <div className="collapse navbar-collapse" id="navbarNavAlt">
+                    <ul className="navbar-nav ms-auto gap-3">
                         <li className="nav-item">
-                            <Link className="nav-link" to="/publications">Publications</Link>
+                            <NavLink
+                                to="/publications"
+                                className={({ isActive }) =>
+                                    `nav-link fw-semibold ${isActive ? "text-white" : "text-secondary"}`
+                                }
+                            >
+                                Publications
+                            </NavLink>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" to="/comments">Comments</Link>
+                            <NavLink
+                                to="/comments"
+                                className={({ isActive }) =>
+                                    `nav-link fw-semibold ${isActive ? "text-white" : "text-secondary"}`
+                                }
+                            >
+                                Comments
+                            </NavLink>
                         </li>
                     </ul>
                 </div>
