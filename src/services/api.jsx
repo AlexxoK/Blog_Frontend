@@ -38,6 +38,28 @@ export const getCommentByPublication = async (title) => {
     }
 }
 
+export const putComment = async (id, data) => {
+    try {
+        return await apiClient.put(`/comments/putComment/${id}`, data);
+    } catch (e) {
+        return {
+            error: true,
+            e
+        }
+    }
+}
+
+export const deleteComment = async (id) => {
+    try {
+        return await apiClient.delete(`/comments/deleteComment/${id}`)
+    } catch (e) {
+        return {
+            error: true,
+            e
+        }
+    }
+}
+
 export const getPublications = async () => {
     try {
         return await apiClient.get('/publications/getPublications')
@@ -56,6 +78,6 @@ export const getPublicationsByCourseName = async (name) => {
         return {
             error: true,
             e
-        };
+        }
     }
-};
+}

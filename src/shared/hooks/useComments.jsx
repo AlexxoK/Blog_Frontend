@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getcomments, getCommentByPublication } from "../../services/api";
+import { getcomments, getCommentByPublication, putComment as apiPutComment, deleteComment } from "../../services/api";
 
 export const useComments = () => {
     const [comments, setComments] = useState([]);
@@ -10,10 +10,12 @@ export const useComments = () => {
     const [filter, setFilter] = useState("");
 
     const sortComments = (items, criterion) => {
-        return items.slice().sort((a, b) => {
+        return [...items].sort((a, b) => {
             switch (criterion) {
                 case "course":
-                    return (a.publication?.course?.[0]?.name || "").localeCompare(b.publication?.course?.[0]?.name || "");
+                    return (a.publication?.course?.[0]?.name || "").localeCompare(
+                        b.publication?.course?.[0]?.name || ""
+                    );
                 case "date":
                     return new Date(b.createdAt) - new Date(a.createdAt);
                 case "author":
@@ -21,8 +23,8 @@ export const useComments = () => {
                 default:
                     return 0;
             }
-        })
-    }
+        });
+    };
 
     const fetchComments = async (title = "") => {
         setLoading(true);
@@ -41,7 +43,28 @@ export const useComments = () => {
         }
 
         setLoading(false);
-    }
+    };
+
+    const editComment = async (id, updatedContent, publicationTitle) => {
+        const res = await apiPutComment(id, {
+            comment: updatedContent,
+            publication: publicationTitle,
+        });
+        if (!res.error) {
+            await fetchComments(searchTitle);
+        } else {
+            setError("Error updating comment.");
+        }
+    };
+
+    const removeComment = async (id) => {
+        const res = await deleteComment(id);
+        if (!res.error) {
+            await fetchComments(searchTitle);
+        } else {
+            setError("Error deleting comment.");
+        }
+    };
 
     useEffect(() => {
         setComments(filter ? sortComments(originalComments, filter) : originalComments);
@@ -51,7 +74,5 @@ export const useComments = () => {
         fetchComments();
     }, []);
 
-    return {
-        comments, loading, error, searchTitle, setSearchTitle, filter, setFilter, fetchComments,
-    }
+    return { comments, loading, error, searchTitle, setSearchTitle, filter, setFilter, fetchComments, editComment, removeComment }
 }

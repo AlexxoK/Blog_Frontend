@@ -1,7 +1,31 @@
+import { useState } from "react";
 import { useComments } from "../shared/hooks/useComments";
 
 const Comments = () => {
-  const { comments, loading, error, searchTitle, setSearchTitle, filter, setFilter, fetchComments } = useComments();
+  const { comments, loading, error, searchTitle, setSearchTitle, filter, setFilter, fetchComments, editComment, removeComment } = useComments();
+
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState("");
+
+  const startEditing = (id, currentComment) => {
+    setEditingId(id);
+    setEditText(currentComment);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditText("");
+  };
+
+  const saveEdit = async (id, publicationTitle) => {
+    if (!editText.trim()) {
+      alert("Comment cannot be empty");
+      return;
+    }
+    await editComment(id, editText.trim(), publicationTitle);
+    setEditingId(null);
+    setEditText("");
+  };
 
   return (
     <div className="container py-5">
@@ -14,7 +38,9 @@ const Comments = () => {
           className="form-control flex-grow-1 rounded-3"
           value={searchTitle}
           onChange={(e) => setSearchTitle(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && fetchComments(searchTitle.trim())}
+          onKeyDown={(e) =>
+            e.key === "Enter" && fetchComments(searchTitle.trim())
+          }
         />
         <button
           className="btn btn-outline-dark rounded-3"
@@ -50,18 +76,29 @@ const Comments = () => {
                   <p className="mb-2">
                     <strong>📘 Course:</strong>{" "}
                     {publication?.course?.length
-                      ? publication.course.map(c => c.name).join(", ")
+                      ? publication.course.map((c) => c.name).join(", ")
                       : "No course"}
                   </p>
                   <p className="mb-3">
-                    <strong>📝 Publication:</strong> {publication?.title || "Untitled"}
+                    <strong>📝 Publication:</strong>{" "}
+                    {publication?.title || "Untitled"}
                   </p>
                   <hr />
                   <p className="mb-1">
                     <strong>👤 Author:</strong> {author}
                   </p>
                   <p className="mb-3">
-                    <strong>💬 Comment:</strong> {comment}
+                    <strong>💬 Comment:</strong>{" "}
+                    {editingId === _id ? (
+                      <textarea
+                        className="form-control"
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        rows={3}
+                      />
+                    ) : (
+                      comment
+                    )}
                   </p>
                   <hr />
                   <p className="text-secondary small mb-0">
@@ -72,6 +109,39 @@ const Comments = () => {
                       year: "numeric",
                     })}
                   </p>
+                  <div className="mt-3 d-flex gap-2">
+                    {editingId === _id ? (
+                      <>
+                        <button
+                          className="btn btn-success"
+                          onClick={() => saveEdit(_id, publication?.title)}
+                        >
+                          💾 Save
+                        </button>
+                        <button
+                          className="btn btn-secondary"
+                          onClick={cancelEditing}
+                        >
+                          ❌ Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          className="btn btn-outline-primary"
+                          onClick={() => startEditing(_id, comment)}
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          className="btn btn-outline-danger"
+                          onClick={() => removeComment(_id)}
+                        >
+                          🗑️ Delete
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
